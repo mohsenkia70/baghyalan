@@ -1,0 +1,18 @@
+{
+  "name": "عمارت یلان",
+  "short_name": "یلان",
+  "description": "پلتفرم دیجیتال لوکس عمارت یلان برای برنامه‌ریزی و مدیریت مراسم",
+  "start_url": "/khane",
+  "id": "/khane",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F2E7",
+  "theme_color": "#1E3B2E",
+  "lang": "fa-IR",
+  "dir": "rtl",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+/* ============================================================
+   عمارت یلان — Design Tokens
+   Palette grounded in the actual venue: warm travertine stone,
+   deep garden cypress green, restrained brushed gold, and the
+   near-black of the garden at night under the rotunda lights.
+   ============================================================ */
+
+:root {
+  /* --- Color: surfaces --- */
+  --color-ivory: #F7F2E7;
+  --color-ivory-deep: #EEE4D0;
+  --color-paper: #FFFDF8;
+  --color-stone: #DCD0B4;
+
+  /* --- Color: brand --- */
+  --color-forest: #1E3B2E;
+  --color-forest-2: #2C4F3D;
+  --color-forest-tint: #E4EAE2;
+  --color-gold: #AC8A52;
+  --color-gold-soft: #DCC79A;
+  --color-gold-deep: #8C6C36;
+
+  /* --- Color: night (depth sections, hero, admin chrome) --- */
+  --color-night: #12180F;
+  --color-night-2: #1B2419;
+  --color-night-soft: #26301F;
+
+  /* --- Color: romance accent (sparingly) --- */
+  --color-blush: #E7C7C0;
+  --color-blush-deep: #C79188;
+
+  /* --- Color: text --- */
+  --color-ink: #211C13;
+  --color-ink-soft: #5B5140;
+  --color-on-night: #F3EEE0;
+  --color-on-night-soft: #B9B8A4;
+
+  /* --- Color: semantic --- */
+  --color-success: #3F6B4A;
+  --color-warning: #B07A2E;
+  --color-error: #A23B2E;
+
+  /* --- Radius --- */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  /* --- Shadow: quiet, low-contrast, warm-toned --- */
+  --shadow-sm: 0 1px 2px rgba(33, 28, 19, 0.06), 0 1px 1px rgba(33, 28, 19, 0.04);
+  --shadow-md: 0 6px 20px -6px rgba(33, 28, 19, 0.14), 0 2px 6px rgba(33, 28, 19, 0.06);
+  --shadow-lg: 0 20px 48px -12px rgba(18, 24, 15, 0.28), 0 6px 16px -4px rgba(18, 24, 15, 0.12);
+  --shadow-gold: 0 8px 28px -8px rgba(172, 138, 82, 0.35);
+
+  /* --- Motion --- */
+  --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 180ms;
+  --duration-base: 420ms;
+  --duration-slow: 900ms;
+}
+
+@theme inline {
+  --color-ivory: var(--color-ivory);
+  --color-ivory-deep: var(--color-ivory-deep);
+  --color-paper: var(--color-paper);
+  --color-stone: var(--color-stone);
+
+  --color-forest: var(--color-forest);
+  --color-forest-2: var(--color-forest-2);
+  --color-forest-tint: var(--color-forest-tint);
+  --color-gold: var(--color-gold);
+  --color-gold-soft: var(--color-gold-soft);
+  --color-gold-deep: var(--color-gold-deep);
+
+  --color-night: var(--color-night);
+  --color-night-2: var(--color-night-2);
+  --color-night-soft: var(--color-night-soft);
+
+  --color-blush: var(--color-blush);
+  --color-blush-deep: var(--color-blush-deep);
+
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-on-night: var(--color-on-night);
+  --color-on-night-soft: var(--color-on-night-soft);
+
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
+
+  --font-display: "Vazirmatn", "Tahoma", sans-serif;
+  --font-body: "Vazirmatn", "Tahoma", sans-serif;
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-pill: var(--radius-pill);
+}
+
+* {
+  border-color: var(--color-stone);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-ivory);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background: var(--color-gold-soft);
+  color: var(--color-ink);
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-stone); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-gold-soft); }
+
+:focus-visible {
+  outline: 2px solid var(--color-gold-deep);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Signature motif: the rotunda arc ---
+   A thin arc, echoing the venue's circular colonnades, used as a
+   recurring structural device: section dividers, active-tab marks,
+   card corner accents. */
+.arc-divider {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold-soft) 50%, transparent);
+}
+
+.arc-divider::before {
+  content: "";
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 22px;
+  border: 1px solid var(--color-gold-soft);
+  border-bottom: none;
+  border-radius: 999px 999px 0 0;
+  opacity: 0.9;
+}
+
+.text-balance { text-wrap: balance; }
+.font-display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; }
+.font-num { font-variant-numeric: tabular-nums; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
