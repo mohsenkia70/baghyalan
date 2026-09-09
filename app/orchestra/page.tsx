@@ -240,9 +240,7 @@ function CurtainHero() {
                 transition={{ duration: 0.8, delay: 0.3, ease }}
                 className="mt-4 font-display text-[30px] leading-[1.3] text-on-night sm:mt-5 sm:text-[44px] lg:text-[62px]"
               >
-                صحنه که روشن می‌شود،
-                <br />
-                عمارت به آهنگ می‌رسد
+               
               </motion.h1>
 
               <motion.p
