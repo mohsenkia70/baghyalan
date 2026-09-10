@@ -327,7 +327,7 @@ export const MY_GUESTS: Guest[] = [
   },
   {
     id: "gu4",
-    name: "تیم شرکت کیان",
+    name: "تیم شرکت",
     group: "همکاران",
     companions: 6,
     confirmed: false,

@@ -1,9 +1,11 @@
+
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
+  AlertTriangle,
   ArrowRight,
   Check,
   CheckCircle2,
@@ -15,12 +17,15 @@ import {
   UserRound,
   Users,
   X,
-  AlertTriangle,
 } from "lucide-react";
 
 import { AuthGate } from "@/components/auth/AuthGate";
 import { EVENTS } from "@/lib/mock-data/events";
-import type { Guest, GuestCheckInStatus, GuestGroup } from "@/lib/types";
+import type {
+  Guest,
+  GuestCheckInStatus,
+  GuestGroup,
+} from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -192,9 +197,7 @@ function GuestCard({
           size={17}
           className={cn(
             "shrink-0 transition-transform",
-            selected
-              ? "text-forest"
-              : "text-ink-soft",
+            selected ? "text-forest" : "text-ink-soft",
           )}
         />
       </div>
@@ -223,217 +226,248 @@ function GuestDetails({
   const needsReview = guest.checkInStatus === "نیازمند بررسی";
 
   return (
-    <motion.div
+    <motion.aside
       initial={{
         opacity: 0,
-        y: 20,
+        x: 35,
       }}
       animate={{
         opacity: 1,
-        y: 0,
+        x: 0,
       }}
       exit={{
         opacity: 0,
-        y: 20,
+        x: 35,
       }}
       transition={{
-        duration: 0.35,
+        duration: 0.3,
         ease,
       }}
-      className="fixed inset-x-0 bottom-0 z-50 md:absolute md:inset-auto md:right-0 md:top-0 md:h-full md:w-[390px]"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`اطلاعات مهمان ${guest.name}`}
+      className={cn(
+        "fixed z-[60] overflow-hidden bg-paper",
+        "inset-x-0 bottom-0 h-[min(88dvh,760px)]",
+        "rounded-t-[28px] border border-stone/50",
+        "shadow-[0_-20px_60px_rgba(0,0,0,0.16)]",
+        "md:inset-y-0 md:right-0 md:left-auto",
+        "md:h-dvh md:w-[410px]",
+        "md:rounded-none md:rounded-r-[24px]",
+        "md:border-y-0 md:border-l md:border-r-0",
+        "md:shadow-[-20px_0_60px_rgba(0,0,0,0.12)]",
+      )}
     >
-      <div className="h-full overflow-y-auto rounded-t-[28px] border border-stone/50 bg-paper shadow-[0_-15px_50px_rgba(0,0,0,0.12)] md:rounded-none md:rounded-r-[24px] md:shadow-[-15px_0_50px_rgba(0,0,0,0.08)]">
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-stone/40 bg-paper/95 px-5 py-4 backdrop-blur-md">
-          <p className="text-[13px] font-semibold text-ink">
-            اطلاعات مهمان
-          </p>
+      <div className="flex h-full min-h-0 flex-col">
+        {/* Modal Header */}
+        <div className="relative z-10 flex shrink-0 items-center justify-between border-b border-stone/40 bg-paper/95 px-5 py-4 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <div className="h-1 w-10 rounded-full bg-stone/50 md:hidden" />
+
+            <p className="text-[13px] font-semibold text-ink">
+              اطلاعات مهمان
+            </p>
+          </div>
 
           <button
             type="button"
             onClick={onClose}
-            aria-label="بستن"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-ivory-deep text-ink-soft transition-colors hover:text-ink"
+            aria-label="بستن اطلاعات مهمان"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-ivory-deep text-ink-soft transition-colors hover:bg-stone/20 hover:text-ink"
           >
             <X size={18} />
           </button>
         </div>
 
-        <div className="px-5 py-6">
-          <div className="flex flex-col items-center text-center">
-            <div
-              className={cn(
-                "flex h-20 w-20 items-center justify-center rounded-full",
-                isCheckedIn
-                  ? "bg-forest/10 text-forest"
-                  : needsReview
-                    ? "bg-red-50 text-red-600"
-                    : "bg-gold/10 text-gold",
-              )}
-            >
-              {isCheckedIn ? (
-                <CheckCircle2 size={35} />
-              ) : needsReview ? (
-                <ShieldAlert size={35} />
-              ) : (
-                <UserRound size={35} />
-              )}
-            </div>
-
-            <h2 className="mt-4 text-[20px] font-semibold text-ink">
-              {guest.name}
-            </h2>
-
-            <div className="mt-2">
-              <GuestStatus status={guest.checkInStatus} />
-            </div>
-          </div>
-
-          <div className="mt-7 overflow-hidden rounded-[var(--radius-lg)] border border-stone/40">
-            <div className="flex items-center justify-between border-b border-stone/30 px-4 py-3.5">
-              <span className="text-[11.5px] text-ink-soft">
-                گروه مهمان
-              </span>
-
-              <span className="text-[12px] font-medium text-ink">
-                {guest.group}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between border-b border-stone/30 px-4 py-3.5">
-              <span className="text-[11.5px] text-ink-soft">
-                تعداد همراه
-              </span>
-
-              <span className="text-[12px] font-medium text-ink">
-                {guest.companions.toLocaleString("fa-IR")}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between border-b border-stone/30 px-4 py-3.5">
-              <span className="text-[11.5px] text-ink-soft">
-                وضعیت دعوت
-              </span>
-
-              <span
+        {/* Modal Scroll Area */}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="px-5 py-6 pb-8">
+            {/* Guest Identity */}
+            <div className="flex flex-col items-center text-center">
+              <div
                 className={cn(
-                  "text-[12px] font-medium",
-                  guest.confirmed
-                    ? "text-forest"
-                    : "text-red-600",
+                  "flex h-20 w-20 items-center justify-center rounded-full",
+                  isCheckedIn
+                    ? "bg-forest/10 text-forest"
+                    : needsReview
+                      ? "bg-red-50 text-red-600"
+                      : "bg-gold/10 text-gold",
                 )}
               >
-                {guest.confirmed
-                  ? "تأیید شده"
-                  : "تأیید نشده"}
-              </span>
+                {isCheckedIn ? (
+                  <CheckCircle2 size={35} />
+                ) : needsReview ? (
+                  <ShieldAlert size={35} />
+                ) : (
+                  <UserRound size={35} />
+                )}
+              </div>
+
+              <h2 className="mt-4 max-w-full break-words text-[20px] font-semibold text-ink">
+                {guest.name}
+              </h2>
+
+              <div className="mt-2">
+                <GuestStatus status={guest.checkInStatus} />
+              </div>
             </div>
 
-            {guest.phone && (
-              <div className="flex items-center justify-between px-4 py-3.5">
+            {/* Guest Information */}
+            <div className="mt-7 overflow-hidden rounded-[var(--radius-lg)] border border-stone/40">
+              <div className="flex items-center justify-between gap-4 border-b border-stone/30 px-4 py-3.5">
                 <span className="text-[11.5px] text-ink-soft">
-                  شماره تماس
+                  گروه مهمان
+                </span>
+
+                <span className="text-left text-[12px] font-medium text-ink">
+                  {guest.group}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-4 border-b border-stone/30 px-4 py-3.5">
+                <span className="text-[11.5px] text-ink-soft">
+                  تعداد همراه
+                </span>
+
+                <span className="text-[12px] font-medium text-ink">
+                  {guest.companions.toLocaleString("fa-IR")}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-4 border-b border-stone/30 px-4 py-3.5">
+                <span className="text-[11.5px] text-ink-soft">
+                  وضعیت دعوت
                 </span>
 
                 <span
-                  dir="ltr"
-                  className="text-[12px] font-medium text-ink"
+                  className={cn(
+                    "text-[12px] font-medium",
+                    guest.confirmed
+                      ? "text-forest"
+                      : "text-red-600",
+                  )}
                 >
-                  {guest.phone}
+                  {guest.confirmed
+                    ? "تأیید شده"
+                    : "تأیید نشده"}
                 </span>
               </div>
-            )}
-          </div>
 
-          {isCheckedIn && (
-            <div className="mt-4 rounded-[var(--radius-lg)] border border-forest/15 bg-forest/5 p-4">
-              <div className="flex items-start gap-3">
-                <CheckCircle2
-                  size={19}
-                  className="mt-0.5 shrink-0 text-forest"
-                />
+              {guest.phone && (
+                <div className="flex items-center justify-between gap-4 px-4 py-3.5">
+                  <span className="text-[11.5px] text-ink-soft">
+                    شماره تماس
+                  </span>
 
-                <div>
-                  <p className="text-[12.5px] font-semibold text-forest">
-                    ورود این مهمان قبلاً ثبت شده است
-                  </p>
+                  <span
+                    dir="ltr"
+                    className="text-[12px] font-medium text-ink"
+                  >
+                    {guest.phone}
+                  </span>
+                </div>
+              )}
+            </div>
 
-                  {guest.checkedInAt && (
-                    <p className="mt-1 text-[11px] leading-5 text-ink-soft">
-                      زمان ورود: {guest.checkedInAt}
+            {/* Already Checked In */}
+            {isCheckedIn && (
+              <div className="mt-4 rounded-[var(--radius-lg)] border border-forest/15 bg-forest/5 p-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2
+                    size={19}
+                    className="mt-0.5 shrink-0 text-forest"
+                  />
+
+                  <div>
+                    <p className="text-[12.5px] font-semibold text-forest">
+                      ورود این مهمان قبلاً ثبت شده است
                     </p>
-                  )}
+
+                    {guest.checkedInAt && (
+                      <p className="mt-1 text-[11px] leading-5 text-ink-soft">
+                        زمان ورود: {guest.checkedInAt}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-
-          {needsReview && (
-            <div className="mt-4 rounded-[var(--radius-lg)] border border-red-200 bg-red-50 p-4">
-              <div className="flex items-start gap-3">
-                <AlertTriangle
-                  size={19}
-                  className="mt-0.5 shrink-0 text-red-600"
-                />
-
-                <div>
-                  <p className="text-[12.5px] font-semibold text-red-700">
-                    ورود این مهمان نیازمند بررسی است
-                  </p>
-
-                  <p className="mt-1 text-[11px] leading-5 text-red-700/75">
-                    قبل از اجازه ورود، وضعیت دعوت مهمان را با
-                    مسئول مراسم بررسی کنید.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="mt-6">
-            {isCheckedIn ? (
-              <button
-                type="button"
-                disabled
-                className="flex min-h-14 w-full cursor-not-allowed items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-forest/10 text-[14px] font-semibold text-forest"
-              >
-                <CheckCircle2 size={19} />
-                ورود ثبت شده است
-              </button>
-            ) : needsReview ? (
-              <button
-                type="button"
-                onClick={onReview}
-                className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-red-600 text-[14px] font-semibold text-paper shadow-sm transition-transform active:scale-[0.98]"
-              >
-                <ShieldAlert size={19} />
-                درخواست بررسی ورود
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={onCheckIn}
-                disabled={checkingIn}
-                className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-forest text-[14px] font-semibold text-paper shadow-sm transition-transform active:scale-[0.98] disabled:opacity-60"
-              >
-                {checkingIn ? (
-                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-paper/30 border-t-paper" />
-                ) : (
-                  <Check size={20} />
-                )}
-                {checkingIn ? "در حال ثبت..." : "ثبت ورود مهمان"}
-              </button>
             )}
-          </div>
 
-          {!isCheckedIn && !needsReview && !guest.confirmed && (
-            <p className="mt-3 text-center text-[10.5px] leading-5 text-ink-soft">
-              این مهمان تأیید نهایی نشده است. در صورت نیاز،
-              ابتدا وضعیت دعوت را بررسی کنید.
-            </p>
-          )}
+            {/* Needs Review */}
+            {needsReview && (
+              <div className="mt-4 rounded-[var(--radius-lg)] border border-red-200 bg-red-50 p-4">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle
+                    size={19}
+                    className="mt-0.5 shrink-0 text-red-600"
+                  />
+
+                  <div>
+                    <p className="text-[12.5px] font-semibold text-red-700">
+                      ورود این مهمان نیازمند بررسی است
+                    </p>
+
+                    <p className="mt-1 text-[11px] leading-5 text-red-700/75">
+                      قبل از اجازه ورود، وضعیت دعوت مهمان را با
+                      مسئول مراسم بررسی کنید.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Action */}
+            <div className="mt-6">
+              {isCheckedIn ? (
+                <button
+                  type="button"
+                  disabled
+                  className="flex min-h-14 w-full cursor-not-allowed items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-forest/10 text-[14px] font-semibold text-forest"
+                >
+                  <CheckCircle2 size={19} />
+                  ورود ثبت شده است
+                </button>
+              ) : needsReview ? (
+                <button
+                  type="button"
+                  onClick={onReview}
+                  className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-red-600 text-[14px] font-semibold text-paper shadow-sm transition-transform active:scale-[0.98]"
+                >
+                  <ShieldAlert size={19} />
+                  درخواست بررسی ورود
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onCheckIn}
+                  disabled={checkingIn}
+                  className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-forest text-[14px] font-semibold text-paper shadow-sm transition-transform active:scale-[0.98] disabled:opacity-60"
+                >
+                  {checkingIn ? (
+                    <span className="h-5 w-5 animate-spin rounded-full border-2 border-paper/30 border-t-paper" />
+                  ) : (
+                    <Check size={20} />
+                  )}
+
+                  {checkingIn
+                    ? "در حال ثبت..."
+                    : "ثبت ورود مهمان"}
+                </button>
+              )}
+            </div>
+
+            {!isCheckedIn &&
+              !needsReview &&
+              !guest.confirmed && (
+                <p className="mt-3 text-center text-[10.5px] leading-5 text-ink-soft">
+                  این مهمان تأیید نهایی نشده است. در صورت نیاز،
+                  ابتدا وضعیت دعوت را بررسی کنید.
+                </p>
+              )}
+          </div>
         </div>
       </div>
-    </motion.div>
+    </motion.aside>
   );
 }
 
@@ -451,8 +485,25 @@ function CheckInContent() {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [checkingInId, setCheckingInId] = useState<string | null>(null);
+  const [checkingInId, setCheckingInId] = useState<string | null>(
+    null,
+  );
 
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<FilterValue>("همه");
+
+  const [selectedGuestId, setSelectedGuestId] = useState<
+    string | null
+  >(null);
+
+  const [notice, setNotice] = useState<{
+    type: "success" | "warning";
+    message: string;
+  } | null>(null);
+
+  /*
+   * Load guests
+   */
   useEffect(() => {
     let cancelled = false;
 
@@ -461,13 +512,19 @@ function CheckInContent() {
       setLoadError(null);
 
       try {
-        const res = await fetch(`/api/events/${eventId}/guests`, {
-          cache: "no-store",
-        });
+        const res = await fetch(
+          `/api/events/${eventId}/guests`,
+          {
+            cache: "no-store",
+          },
+        );
+
         const data = await res.json();
 
         if (!res.ok) {
-          throw new Error(data.error ?? "خطا در دریافت لیست مهمانان.");
+          throw new Error(
+            data.error ?? "خطا در دریافت لیست مهمانان.",
+          );
         }
 
         if (!cancelled) {
@@ -482,28 +539,24 @@ function CheckInContent() {
           );
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
-    if (eventId) loadGuests();
+    if (eventId) {
+      loadGuests();
+    }
 
     return () => {
       cancelled = true;
     };
   }, [eventId]);
 
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<FilterValue>("همه");
-  const [selectedGuestId, setSelectedGuestId] = useState<string | null>(
-    null,
-  );
-
-  const [notice, setNotice] = useState<{
-    type: "success" | "warning";
-    message: string;
-  } | null>(null);
-
+  /*
+   * Selected guest
+   */
   const selectedGuest = useMemo(
     () =>
       guests.find(
@@ -512,6 +565,9 @@ function CheckInContent() {
     [guests, selectedGuestId],
   );
 
+  /*
+   * Filter guests
+   */
   const filteredGuests = useMemo(() => {
     const normalizedSearch =
       normalizeSearchValue(search);
@@ -532,6 +588,9 @@ function CheckInContent() {
     });
   }, [guests, search, filter]);
 
+  /*
+   * Statistics
+   */
   const statistics = useMemo(() => {
     const entered = guests.filter(
       (guest) => guest.checkInStatus === "وارد شده",
@@ -553,21 +612,71 @@ function CheckInContent() {
     };
   }, [guests]);
 
+  /*
+   * Lock page scroll while details panel is open.
+   */
+  useEffect(() => {
+    if (!selectedGuest) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [selectedGuest]);
+
+  /*
+   * Escape closes details panel.
+   */
+  useEffect(() => {
+    if (!selectedGuest) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setSelectedGuestId(null);
+      }
+    }
+
+    window.addEventListener(
+      "keydown",
+      handleKeyDown,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown,
+      );
+    };
+  }, [selectedGuest]);
+
+  /*
+   * Check in
+   */
   async function handleCheckIn() {
     if (!selectedGuest) return;
 
     if (selectedGuest.checkInStatus === "وارد شده") {
       setNotice({
         type: "warning",
-        message: "ورود این مهمان قبلاً ثبت شده است.",
+        message:
+          "ورود این مهمان قبلاً ثبت شده است.",
       });
       return;
     }
 
-    if (selectedGuest.checkInStatus === "نیازمند بررسی") {
+    if (
+      selectedGuest.checkInStatus === "نیازمند بررسی"
+    ) {
       setNotice({
         type: "warning",
-        message: "این مهمان قبل از ورود نیازمند بررسی است.",
+        message:
+          "این مهمان قبل از ورود نیازمند بررسی است.",
       });
       return;
     }
@@ -577,26 +686,40 @@ function CheckInContent() {
     try {
       const res = await fetch(
         `/api/events/${eventId}/guests/${selectedGuest.id}/check-in`,
-        { method: "POST" },
+        {
+          method: "POST",
+        },
       );
+
       const data = await res.json();
 
       if (!res.ok || !data.success) {
         setNotice({
           type: "warning",
-          message: data.error ?? "ثبت ورود مهمان انجام نشد.",
+          message:
+            data.error ??
+            "ثبت ورود مهمان انجام نشد.",
         });
-        // sync with server truth in case another door already checked them in
+
         if (data.guest) {
           setGuests((current) =>
-            current.map((g) => (g.id === selectedGuest.id ? data.guest : g)),
+            current.map((guest) =>
+              guest.id === selectedGuest.id
+                ? data.guest
+                : guest,
+            ),
           );
         }
+
         return;
       }
 
       setGuests((current) =>
-        current.map((g) => (g.id === selectedGuest.id ? data.guest : g)),
+        current.map((guest) =>
+          guest.id === selectedGuest.id
+            ? data.guest
+            : guest,
+        ),
       );
 
       setNotice({
@@ -612,13 +735,17 @@ function CheckInContent() {
     } catch {
       setNotice({
         type: "warning",
-        message: "خطا در ارتباط با سرور. دوباره تلاش کنید.",
+        message:
+          "خطا در ارتباط با سرور. دوباره تلاش کنید.",
       });
     } finally {
       setCheckingInId(null);
     }
   }
 
+  /*
+   * Review request
+   */
   function handleReview() {
     if (!selectedGuest) return;
 
@@ -634,6 +761,9 @@ function CheckInContent() {
     }, 4000);
   }
 
+  /*
+   * Event not found
+   */
   if (!event) {
     return (
       <main className="flex min-h-dvh items-center justify-center bg-ivory px-5">
@@ -647,8 +777,8 @@ function CheckInContent() {
           </h1>
 
           <p className="mt-2 text-[12px] leading-6 text-ink-soft">
-            مراسم موردنظر وجود ندارد یا دسترسی به آن امکان‌پذیر
-            نیست.
+            مراسم موردنظر وجود ندارد یا دسترسی به آن
+            امکان‌پذیر نیست.
           </p>
 
           <button
@@ -705,7 +835,8 @@ function CheckInContent() {
             <button
               type="button"
               onClick={() => {
-                window.location.href = "/login?role=guard";
+                window.location.href =
+                  "/login?role=guard";
               }}
               aria-label="خروج"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-stone/50 bg-paper text-ink-soft transition-colors hover:text-ink"
@@ -716,6 +847,7 @@ function CheckInContent() {
         </div>
       </header>
 
+      {/* Content */}
       <div className="mx-auto w-full max-w-6xl px-4 py-5 md:px-6 md:py-7">
         {/* Page title */}
         <motion.div
@@ -848,137 +980,146 @@ function CheckInContent() {
           </div>
         </div>
 
-        {/* Main area */}
-        <div className="relative">
-          <div
-            className={cn(
-              "transition-[padding] duration-300",
-              selectedGuest && "md:pl-[410px]",
-            )}
-          >
-            <div className="mb-3 flex items-center justify-between">
-              <div>
-                <h2 className="text-[14px] font-semibold text-ink">
-                  فهرست مهمانان
-                </h2>
+        {/* Guest list */}
+        <div>
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <h2 className="text-[14px] font-semibold text-ink">
+                فهرست مهمانان
+              </h2>
 
-                <p className="mt-1 text-[10.5px] text-ink-soft">
-                  {filteredGuests.length.toLocaleString("fa-IR")} مهمان
-                  نمایش داده می‌شود
-                </p>
-              </div>
-
-              {search && (
-                <span className="rounded-full bg-forest/5 px-2.5 py-1 text-[10px] text-forest">
-                  نتیجه جستجو
-                </span>
-              )}
+              <p className="mt-1 text-[10.5px] text-ink-soft">
+                {filteredGuests.length.toLocaleString("fa-IR")} مهمان
+                نمایش داده می‌شود
+              </p>
             </div>
 
-            {loading ? (
-              <div className="flex flex-col items-center gap-3 rounded-[var(--radius-xl)] border border-stone/45 bg-paper px-6 py-16 text-center">
-                <span className="h-8 w-8 animate-spin rounded-full border-2 border-forest/20 border-t-forest" />
-                <p className="text-[12px] text-ink-soft">در حال دریافت لیست مهمانان...</p>
-              </div>
-            ) : loadError ? (
-              <div className="rounded-[var(--radius-xl)] border border-red-200 bg-red-50 px-6 py-10 text-center">
-                <AlertTriangle size={26} className="mx-auto text-red-600" />
-                <p className="mt-3 text-[13px] font-medium text-red-700">{loadError}</p>
-              </div>
-            ) : filteredGuests.length === 0 ? (
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 10,
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                className="rounded-[var(--radius-xl)] border border-stone/45 bg-paper px-6 py-12 text-center"
-              >
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ivory-deep text-ink-soft">
-                  <Search size={24} />
-                </div>
-
-                <h3 className="mt-4 text-[15px] font-semibold text-ink">
-                  مهمانی پیدا نشد
-                </h3>
-
-                <p className="mt-2 text-[11.5px] leading-6 text-ink-soft">
-                  نام یا شماره موبایل را بررسی کنید و دوباره
-                  جستجو کنید.
-                </p>
-
-                {(search || filter !== "همه") && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearch("");
-                      setFilter("همه");
-                    }}
-                    className="mt-4 rounded-full bg-forest px-4 py-2.5 text-[11px] font-medium text-paper"
-                  >
-                    نمایش همه مهمانان
-                  </button>
-                )}
-              </motion.div>
-            ) : (
-              <div className="grid gap-2.5 md:grid-cols-2">
-                <AnimatePresence mode="popLayout">
-                  {filteredGuests.map((guest) => (
-                    <GuestCard
-                      key={guest.id}
-                      guest={guest}
-                      selected={
-                        selectedGuestId === guest.id
-                      }
-                      onSelect={() =>
-                        setSelectedGuestId(guest.id)
-                      }
-                    />
-                  ))}
-                </AnimatePresence>
-              </div>
+            {search && (
+              <span className="rounded-full bg-forest/5 px-2.5 py-1 text-[10px] text-forest">
+                نتیجه جستجو
+              </span>
             )}
           </div>
 
-          {/* Desktop overlay */}
-          <AnimatePresence>
-            {selectedGuest && (
-              <>
-                <motion.button
-                  type="button"
-                  aria-label="بستن اطلاعات مهمان"
-                  initial={{
-                    opacity: 0,
-                  }}
-                  animate={{
-                    opacity: 1,
-                  }}
-                  exit={{
-                    opacity: 0,
-                  }}
-                  onClick={() =>
-                    setSelectedGuestId(null)
-                  }
-                  className="fixed inset-0 z-40 bg-night/15 backdrop-blur-[1px] md:absolute md:inset-y-0 md:right-0 md:left-[390px]"
-                />
+          {loading ? (
+            <div className="flex flex-col items-center gap-3 rounded-[var(--radius-xl)] border border-stone/45 bg-paper px-6 py-16 text-center">
+              <span className="h-8 w-8 animate-spin rounded-full border-2 border-forest/20 border-t-forest" />
 
-                <GuestDetails
-                  guest={selectedGuest}
-                  onClose={() =>
-                    setSelectedGuestId(null)
-                  }
-                  onCheckIn={handleCheckIn}
-                  onReview={handleReview}
-                  checkingIn={checkingInId === selectedGuest.id}
-                />
-              </>
-            )}
-          </AnimatePresence>
+              <p className="text-[12px] text-ink-soft">
+                در حال دریافت لیست مهمانان...
+              </p>
+            </div>
+          ) : loadError ? (
+            <div className="rounded-[var(--radius-xl)] border border-red-200 bg-red-50 px-6 py-10 text-center">
+              <AlertTriangle
+                size={26}
+                className="mx-auto text-red-600"
+              />
+
+              <p className="mt-3 text-[13px] font-medium text-red-700">
+                {loadError}
+              </p>
+            </div>
+          ) : filteredGuests.length === 0 ? (
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 10,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              className="rounded-[var(--radius-xl)] border border-stone/45 bg-paper px-6 py-12 text-center"
+            >
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ivory-deep text-ink-soft">
+                <Search size={24} />
+              </div>
+
+              <h3 className="mt-4 text-[15px] font-semibold text-ink">
+                مهمانی پیدا نشد
+              </h3>
+
+              <p className="mt-2 text-[11.5px] leading-6 text-ink-soft">
+                نام یا شماره موبایل را بررسی کنید و دوباره
+                جستجو کنید.
+              </p>
+
+              {(search || filter !== "همه") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch("");
+                    setFilter("همه");
+                  }}
+                  className="mt-4 rounded-full bg-forest px-4 py-2.5 text-[11px] font-medium text-paper"
+                >
+                  نمایش همه مهمانان
+                </button>
+              )}
+            </motion.div>
+          ) : (
+            <div className="grid gap-2.5 md:grid-cols-2">
+              <AnimatePresence mode="popLayout">
+                {filteredGuests.map((guest) => (
+                  <GuestCard
+                    key={guest.id}
+                    guest={guest}
+                    selected={
+                      selectedGuestId === guest.id
+                    }
+                    onSelect={() =>
+                      setSelectedGuestId(guest.id)
+                    }
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Guest Details Modal */}
+      <AnimatePresence>
+        {selectedGuest && (
+          <>
+            {/* Global Overlay */}
+            <motion.button
+              type="button"
+              aria-label="بستن اطلاعات مهمان"
+              initial={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              exit={{
+                opacity: 0,
+              }}
+              transition={{
+                duration: 0.2,
+              }}
+              onClick={() =>
+                setSelectedGuestId(null)
+              }
+              className="fixed inset-0 z-[50] cursor-default bg-night/20 backdrop-blur-[2px]"
+            />
+
+            {/* Details Panel */}
+            <GuestDetails
+              guest={selectedGuest}
+              onClose={() =>
+                setSelectedGuestId(null)
+              }
+              onCheckIn={handleCheckIn}
+              onReview={handleReview}
+              checkingIn={
+                checkingInId === selectedGuest.id
+              }
+            />
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Notice */}
       <AnimatePresence>
@@ -999,7 +1140,7 @@ function CheckInContent() {
               y: 10,
               scale: 0.98,
             }}
-            className="fixed bottom-5 left-4 right-4 z-[70] mx-auto max-w-md"
+            className="fixed bottom-5 left-4 right-4 z-[80] mx-auto max-w-md"
           >
             <div
               className={cn(
@@ -1028,6 +1169,7 @@ function CheckInContent() {
               <button
                 type="button"
                 onClick={() => setNotice(null)}
+                aria-label="بستن پیام"
                 className="mt-0.5 opacity-70 transition-opacity hover:opacity-100"
               >
                 <X size={16} />
@@ -1047,3 +1189,4 @@ export default function GuardCheckInPage() {
     </AuthGate>
   );
 }
+
